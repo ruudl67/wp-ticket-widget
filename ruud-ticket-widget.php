@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Helpdesk (Ruud Licht)
  * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.2.0
+ * Version: 1.3.0
  * Author: Ruud Licht
  * Text Domain: rtw
  */
@@ -232,29 +232,69 @@ JS;
  */
 function rtw_render_dashboard_widget() {
 	$host = rtw_get_site_host();
+	$site_label = get_bloginfo( 'name' ) . ( $host ? ' (' . $host . ')' : '' );
 	?>
-	<div id="rtw-missing-site" class="notice notice-error" style="display:none;margin:0 0 10px;">
-		<p>Kon het domein van deze website niet herkennen — neem contact op met Ruud.</p>
+	<div class="rtw-card">
+		<div id="rtw-missing-site" class="notice notice-error" style="display:none;margin:0 0 10px;">
+			<p>Kon het domein van deze website niet herkennen — neem contact op met ons.</p>
+		</div>
+		<h2 class="rtw-title">Iets aanpassen aan je website?</h2>
+		<div class="rtw-sitename"><?php echo esc_html( $site_label ); ?></div>
+		<form id="rtw-form">
+			<label for="rtw-message">Wat wil je aangepast of toegevoegd hebben?</label>
+			<textarea id="rtw-message" rows="4" placeholder="Bijv. graag het telefoonnummer in de footer aanpassen naar…"></textarea>
+			<label for="rtw-name">Je naam (optioneel)</label>
+			<input type="text" id="rtw-name" value="<?php echo esc_attr( wp_get_current_user()->display_name ); ?>">
+			<button type="submit" id="rtw-submit">Versturen</button>
+			<div id="rtw-status" class="rtw-status"></div>
+		</form>
+		<p class="rtw-footnote">Dit verzoek komt direct bij ons binnen — geen account of inloggen nodig.</p>
 	</div>
-	<form id="rtw-form">
-		<p style="margin-top:0;color:#555;">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig.</p>
-		<p>
-			<label for="rtw-message" style="display:block;font-weight:600;margin-bottom:4px;">Wat wil je aangepast of toegevoegd hebben?</label>
-			<textarea id="rtw-message" rows="4" style="width:100%;" placeholder="Bijv. graag het telefoonnummer in de footer aanpassen naar…"></textarea>
-		</p>
-		<p>
-			<label for="rtw-name" style="display:block;font-weight:600;margin-bottom:4px;">Je naam (optioneel)</label>
-			<input type="text" id="rtw-name" style="width:100%;" value="<?php echo esc_attr( wp_get_current_user()->display_name ); ?>">
-		</p>
-		<p>
-			<button type="submit" id="rtw-submit" class="button button-primary">Versturen</button>
-			<span id="rtw-status" class="rtw-status" style="margin-left:10px;"></span>
-		</p>
-		<?php if ( $host ) : ?>
-			<p style="font-size:11.5px;color:#888;margin-bottom:0;">Website: <?php echo esc_html( $host ); ?></p>
-		<?php endif; ?>
-	</form>
 	<style>
+		.rtw-card {
+			background: #fff;
+			border-radius: 20px;
+			box-shadow: 0 2px 10px rgba(23,35,42,0.10);
+			padding: 28px 24px;
+			max-width: 420px;
+			box-sizing: border-box;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+		}
+		.rtw-title { font-size: 20px; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.01em; color: #17232A; }
+		.rtw-sitename { font-size: 13.5px; color: #5B6870; margin-bottom: 18px; word-break: break-all; }
+		.rtw-card label { display: block; font-size: 12.5px; color: #5B6870; margin: 14px 0 6px; }
+		.rtw-card textarea,
+		.rtw-card input[type="text"] {
+			width: 100%;
+			border: 1px solid #E7E9EB;
+			background: #F4F5F6;
+			border-radius: 12px;
+			padding: 11px 13px;
+			font-size: 15px;
+			color: #17232A;
+			resize: vertical;
+			font-family: inherit;
+			box-sizing: border-box;
+		}
+		.rtw-card textarea:focus,
+		.rtw-card input[type="text"]:focus { outline: 2px solid #009284; outline-offset: 1px; }
+		.rtw-card button#rtw-submit {
+			margin-top: 18px;
+			width: 100%;
+			background: #009284;
+			color: #fff;
+			border: none;
+			border-radius: 999px;
+			padding: 14px;
+			font-size: 15px;
+			font-weight: 700;
+			cursor: pointer;
+			box-shadow: none;
+		}
+		.rtw-card button#rtw-submit:hover { filter: brightness(1.05); }
+		.rtw-card button#rtw-submit:disabled { opacity: .5; cursor: default; }
+		.rtw-footnote { font-size: 11.5px; color: #939CA3; margin: 16px 0 0; line-height: 1.5; }
+		.rtw-status { font-size: 13px; margin-top: 10px; display: block; }
 		.rtw-status.rtw-ok { color: #1a7f37; font-weight: 600; }
 		.rtw-status.rtw-err { color: #d63638; font-weight: 600; }
 	</style>
