@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Wijziging aanvragen (Ruud Licht)
  * Description: Zet een kort formulier "Wijziging aanvragen aan uw website" in het WordPress-dashboard, dat rechtstreeks bij Ruud Licht binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Ruud Licht
  * Text Domain: rtw
  */
@@ -195,7 +195,7 @@ function rtw_render_dashboard_widget() {
 		<p>Kon het domein van deze website niet herkennen — neem contact op met Ruud.</p>
 	</div>
 	<form id="rtw-form">
-		<p style="margin-top:0;color:#555;">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het verzoek komt direct bij Ruud Licht binnen, geen account of e-mail nodig.</p>
+		<p style="margin-top:0;color:#555;">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig.</p>
 		<p>
 			<label for="rtw-message" style="display:block;font-weight:600;margin-bottom:4px;">Wat wil je aangepast of toegevoegd hebben?</label>
 			<textarea id="rtw-message" rows="4" style="width:100%;" placeholder="Bijv. graag het telefoonnummer in de footer aanpassen naar…"></textarea>
