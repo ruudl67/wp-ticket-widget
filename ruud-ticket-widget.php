@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Wijziging aanvragen (Ruud Licht)
- * Description: Zet een kort formulier "Wijziging aanvragen aan uw website" in het WordPress-dashboard, dat rechtstreeks bij Ruud Licht binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.1.0
+ * Plugin Name: Helpdesk (Ruud Licht)
+ * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
+ * Version: 1.2.0
  * Author: Ruud Licht
  * Text Domain: rtw
  */
@@ -62,7 +62,7 @@ function rtw_register_dashboard_widget() {
 	}
 	wp_add_dashboard_widget(
 		'rtw_ticket_widget',
-		'Wijziging aanvragen aan uw website',
+		'Helpdesk',
 		'rtw_render_dashboard_widget'
 	);
 }
@@ -75,8 +75,8 @@ add_action( 'wp_dashboard_setup', 'rtw_register_dashboard_widget' );
 $GLOBALS['rtw_menu_hook'] = '';
 function rtw_register_admin_menu() {
 	$GLOBALS['rtw_menu_hook'] = add_menu_page(
-		'Verzoek indienen',
-		'Verzoek indienen',
+		'Helpdesk',
+		'Helpdesk',
 		'read',
 		'rtw-ticket-form',
 		'rtw_render_dashboard_widget',
@@ -111,7 +111,7 @@ function rtw_admin_menu_style() {
 add_action( 'admin_head', 'rtw_admin_menu_style' );
 
 /**
- * Scripts laden op het Dashboard én op de aparte "Verzoek indienen"-pagina.
+ * Scripts laden op het Dashboard én op de aparte "Helpdesk"-pagina.
  */
 function rtw_enqueue_assets( $hook ) {
 	if ( 'index.php' !== $hook && $hook !== $GLOBALS['rtw_menu_hook'] ) {
