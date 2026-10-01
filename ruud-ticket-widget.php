@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Helpdesk (Ruud Licht)
  * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.3.0
+ * Version: 1.3.1
  * Author: Ruud Licht
  * Text Domain: rtw
  */
@@ -232,14 +232,12 @@ JS;
  */
 function rtw_render_dashboard_widget() {
 	$host = rtw_get_site_host();
-	$site_label = get_bloginfo( 'name' ) . ( $host ? ' (' . $host . ')' : '' );
 	?>
 	<div class="rtw-card">
 		<div id="rtw-missing-site" class="notice notice-error" style="display:none;margin:0 0 10px;">
 			<p>Kon het domein van deze website niet herkennen — neem contact op met ons.</p>
 		</div>
-		<h2 class="rtw-title">Iets aanpassen aan je website?</h2>
-		<div class="rtw-sitename"><?php echo esc_html( $site_label ); ?></div>
+		<p class="rtw-intro">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig.</p>
 		<form id="rtw-form">
 			<label for="rtw-message">Wat wil je aangepast of toegevoegd hebben?</label>
 			<textarea id="rtw-message" rows="4" placeholder="Bijv. graag het telefoonnummer in de footer aanpassen naar…"></textarea>
@@ -248,7 +246,9 @@ function rtw_render_dashboard_widget() {
 			<button type="submit" id="rtw-submit">Versturen</button>
 			<div id="rtw-status" class="rtw-status"></div>
 		</form>
-		<p class="rtw-footnote">Dit verzoek komt direct bij ons binnen — geen account of inloggen nodig.</p>
+		<?php if ( $host ) : ?>
+			<p class="rtw-footnote">Website: <?php echo esc_html( $host ); ?></p>
+		<?php endif; ?>
 	</div>
 	<style>
 		.rtw-card {
@@ -260,8 +260,7 @@ function rtw_render_dashboard_widget() {
 			box-sizing: border-box;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 		}
-		.rtw-title { font-size: 20px; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.01em; color: #17232A; }
-		.rtw-sitename { font-size: 13.5px; color: #5B6870; margin-bottom: 18px; word-break: break-all; }
+		.rtw-intro { margin: 0 0 4px; font-size: 13.5px; color: #5B6870; line-height: 1.5; }
 		.rtw-card label { display: block; font-size: 12.5px; color: #5B6870; margin: 14px 0 6px; }
 		.rtw-card textarea,
 		.rtw-card input[type="text"] {
