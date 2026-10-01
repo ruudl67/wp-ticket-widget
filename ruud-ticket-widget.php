@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name: Helpdesk (Ruud Licht)
+ * Plugin Name: Helpdesk (Digitaal Wendbaar)
  * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.3.1
- * Author: Ruud Licht
+ * Version: 1.4.0
+ * Author: Digitaal Wendbaar
  * Text Domain: rtw
  */
 
@@ -87,23 +87,23 @@ function rtw_register_admin_menu() {
 add_action( 'admin_menu', 'rtw_register_admin_menu' );
 
 /**
- * Knalgeel met zwarte letters, zodat het menu-item meteen opvalt.
+ * Opvallend gekleurd met witte letters, zodat het menu-item meteen opvalt.
  */
 function rtw_admin_menu_style() {
 	?>
 	<style>
 		#toplevel_page_rtw-ticket-form > a.menu-top {
-			background-color: #FFD400 !important;
+			background-color: #009284 !important;
 		}
 		#toplevel_page_rtw-ticket-form > a.menu-top .wp-menu-name,
 		#toplevel_page_rtw-ticket-form div.wp-menu-image:before {
-			color: #111111 !important;
+			color: #ffffff !important;
 			font-weight: 700;
 		}
 		#toplevel_page_rtw-ticket-form:hover > a.menu-top,
 		#toplevel_page_rtw-ticket-form.current > a.menu-top,
 		#toplevel_page_rtw-ticket-form.wp-has-current-submenu > a.menu-top {
-			background-color: #e6c000 !important;
+			background-color: #007266 !important;
 		}
 	</style>
 	<?php
@@ -237,6 +237,7 @@ function rtw_render_dashboard_widget() {
 		<div id="rtw-missing-site" class="notice notice-error" style="display:none;margin:0 0 10px;">
 			<p>Kon het domein van deze website niet herkennen — neem contact op met ons.</p>
 		</div>
+		<h2 class="rtw-title">Ticket aanmaken</h2>
 		<p class="rtw-intro">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig.</p>
 		<form id="rtw-form">
 			<label for="rtw-message">Wat wil je aangepast of toegevoegd hebben?</label>
@@ -260,6 +261,7 @@ function rtw_render_dashboard_widget() {
 			box-sizing: border-box;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 		}
+		.rtw-title { margin: 0 0 8px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; color: #009284; }
 		.rtw-intro { margin: 0 0 4px; font-size: 13.5px; color: #5B6870; line-height: 1.5; }
 		.rtw-card label { display: block; font-size: 12.5px; color: #5B6870; margin: 14px 0 6px; }
 		.rtw-card textarea,
