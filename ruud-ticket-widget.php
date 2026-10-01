@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Wijziging aanvragen (Ruud Licht)
  * Description: Zet een kort formulier "Wijziging aanvragen aan uw website" in het WordPress-dashboard, dat rechtstreeks bij Ruud Licht binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Ruud Licht
  * Text Domain: rtw
  */
@@ -69,10 +69,52 @@ function rtw_register_dashboard_widget() {
 add_action( 'wp_dashboard_setup', 'rtw_register_dashboard_widget' );
 
 /**
- * Scripts alleen laden op het Dashboard, niet op elke admin-pagina.
+ * Apart, opvallend menu-item in de zijbalk — zodat het ook opvalt voor wie
+ * niet eerst op het Dashboard komt.
+ */
+$GLOBALS['rtw_menu_hook'] = '';
+function rtw_register_admin_menu() {
+	$GLOBALS['rtw_menu_hook'] = add_menu_page(
+		'Verzoek indienen',
+		'Verzoek indienen',
+		'read',
+		'rtw-ticket-form',
+		'rtw_render_dashboard_widget',
+		'dashicons-megaphone',
+		3
+	);
+}
+add_action( 'admin_menu', 'rtw_register_admin_menu' );
+
+/**
+ * Knalgeel met zwarte letters, zodat het menu-item meteen opvalt.
+ */
+function rtw_admin_menu_style() {
+	?>
+	<style>
+		#toplevel_page_rtw-ticket-form > a.menu-top {
+			background-color: #FFD400 !important;
+		}
+		#toplevel_page_rtw-ticket-form > a.menu-top .wp-menu-name,
+		#toplevel_page_rtw-ticket-form div.wp-menu-image:before {
+			color: #111111 !important;
+			font-weight: 700;
+		}
+		#toplevel_page_rtw-ticket-form:hover > a.menu-top,
+		#toplevel_page_rtw-ticket-form.current > a.menu-top,
+		#toplevel_page_rtw-ticket-form.wp-has-current-submenu > a.menu-top {
+			background-color: #e6c000 !important;
+		}
+	</style>
+	<?php
+}
+add_action( 'admin_head', 'rtw_admin_menu_style' );
+
+/**
+ * Scripts laden op het Dashboard én op de aparte "Verzoek indienen"-pagina.
  */
 function rtw_enqueue_assets( $hook ) {
-	if ( 'index.php' !== $hook ) {
+	if ( 'index.php' !== $hook && $hook !== $GLOBALS['rtw_menu_hook'] ) {
 		return;
 	}
 
