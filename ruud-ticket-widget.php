@@ -2,19 +2,18 @@
 /**
  * Plugin Name: Helpdesk (Digitaal Wendbaar)
  * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.4.1
+ * Version: 1.5.0
  * Author: Digitaal Wendbaar
  * Text Domain: rtw
+ * Domain Path: /languages
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Direct toegang niet toegestaan.
+	exit;
 }
 
 /**
- * Automatisch updaten vanaf GitHub — zodra er een nieuwe versie op
- * https://github.com/ruudl67/wp-ticket-widget staat, verschijnt hier
- * gewoon het vertrouwde "Update beschikbaar"-balkje bij Plugins.
+ * Automatisch updaten vanaf GitHub.
  */
 require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
@@ -27,9 +26,15 @@ $rtwUpdateChecker = PucFactory::buildUpdateChecker(
 $rtwUpdateChecker->setBranch( 'main' );
 
 /**
- * Firebase-project van de kaartenbak (hetzelfde project als taken.ruudlicht.nl).
- * Deze "API key" is geen geheim — Firebase-rechten worden geregeld via de
- * Firestore security rules (alleen "create" op de tickets-collectie is open).
+ * Vertalingen laden.
+ */
+function rtw_load_textdomain() {
+	load_plugin_textdomain( 'rtw', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+add_action( 'init', 'rtw_load_textdomain' );
+
+/**
+ * Firebase-configuratie.
  */
 define( 'RTW_FIREBASE_API_KEY', 'AIzaSyCbJ9YY6rhEWmYO_SPw7IG-OhUTqFW-rRE' );
 define( 'RTW_FIREBASE_AUTH_DOMAIN', 'kaartenbak-6ae15.firebaseapp.com' );
@@ -38,11 +43,6 @@ define( 'RTW_FIREBASE_STORAGE_BUCKET', 'kaartenbak-6ae15.firebasestorage.app' );
 define( 'RTW_FIREBASE_MESSAGING_SENDER_ID', '94857478666' );
 define( 'RTW_FIREBASE_APP_ID', '1:94857478666:web:b299a0435653eb225cd5f3' );
 
-/**
- * Het kale domein van deze site, in dezelfde vorm als in de kaartenbak
- * (zonder https://, zonder www.), zodat het ticket aan de juiste kaart
- * wordt gekoppeld.
- */
 function rtw_get_site_host() {
 	$host = wp_parse_url( home_url(), PHP_URL_HOST );
 	if ( ! $host ) {
@@ -62,21 +62,17 @@ function rtw_register_dashboard_widget() {
 	}
 	wp_add_dashboard_widget(
 		'rtw_ticket_widget',
-		'Helpdesk',
+		__( 'Helpdesk', 'rtw' ),
 		'rtw_render_dashboard_widget'
 	);
 }
 add_action( 'wp_dashboard_setup', 'rtw_register_dashboard_widget' );
 
-/**
- * Apart, opvallend menu-item in de zijbalk — zodat het ook opvalt voor wie
- * niet eerst op het Dashboard komt.
- */
 $GLOBALS['rtw_menu_hook'] = '';
 function rtw_register_admin_menu() {
 	$GLOBALS['rtw_menu_hook'] = add_menu_page(
-		'Helpdesk',
-		'Helpdesk',
+		__( 'Helpdesk', 'rtw' ),
+		__( 'Helpdesk', 'rtw' ),
 		'read',
 		'rtw-ticket-form',
 		'rtw_render_dashboard_widget',
@@ -86,9 +82,6 @@ function rtw_register_admin_menu() {
 }
 add_action( 'admin_menu', 'rtw_register_admin_menu' );
 
-/**
- * Opvallend gekleurd met witte letters, zodat het menu-item meteen opvalt.
- */
 function rtw_admin_menu_style() {
 	?>
 	<style>
@@ -110,9 +103,6 @@ function rtw_admin_menu_style() {
 }
 add_action( 'admin_head', 'rtw_admin_menu_style' );
 
-/**
- * Scripts laden op het Dashboard én op de aparte "Helpdesk"-pagina.
- */
 function rtw_enqueue_assets( $hook ) {
 	if ( 'index.php' !== $hook && $hook !== $GLOBALS['rtw_menu_hook'] ) {
 		return;
@@ -150,9 +140,16 @@ function rtw_enqueue_assets( $hook ) {
 				'messagingSenderId' => RTW_FIREBASE_MESSAGING_SENDER_ID,
 				'appId'             => RTW_FIREBASE_APP_ID,
 			),
-			'siteUrl'   => rtw_get_site_host(),
-			'siteName'  => get_bloginfo( 'name' ),
-			'userName'  => $current_user && $current_user->exists() ? $current_user->display_name : '',
+			'siteUrl'        => rtw_get_site_host(),
+			'siteName'       => get_bloginfo( 'name' ),
+			'userName'       => $current_user && $current_user->exists() ? $current_user->display_name : '',
+			'i18n'           => array(
+				'validationError' => __( 'Please describe what you would like changed.', 'rtw' ),
+				'sending'         => __( 'Sending…', 'rtw' ),
+				'success'         => __( 'Sent — thank you! Ruud will receive your request right away.', 'rtw' ),
+				'error'           => __( 'Something went wrong — please try again.', 'rtw' ),
+				'send'            => __( 'Send', 'rtw' ),
+			),
 		)
 	);
 
@@ -160,16 +157,13 @@ function rtw_enqueue_assets( $hook ) {
 }
 add_action( 'admin_enqueue_scripts', 'rtw_enqueue_assets' );
 
-/**
- * De JS-logica van het formulier: schrijft rechtstreeks een document naar
- * dezelfde Firestore "tickets"-collectie die de kaartenbak uitleest.
- */
 function rtw_inline_script() {
 	return <<<'JS'
 (function () {
 	function init() {
 		var app = firebase.initializeApp(RTW_DATA.firebaseConfig, 'rtw-' + RTW_DATA.siteUrl);
 		var db = app.firestore();
+		var i18n = RTW_DATA.i18n;
 
 		var form = document.getElementById('rtw-form');
 		if (!form) return;
@@ -191,12 +185,12 @@ function rtw_inline_script() {
 			statusEl.textContent = '';
 			statusEl.className = 'rtw-status';
 			if (!message) {
-				statusEl.textContent = 'Vul even in wat je aangepast wilt hebben.';
+				statusEl.textContent = i18n.validationError;
 				statusEl.className = 'rtw-status rtw-err';
 				return;
 			}
 			btn.disabled = true;
-			btn.textContent = 'Versturen…';
+			btn.textContent = i18n.sending;
 			db.collection('tickets').add({
 				url: RTW_DATA.siteUrl,
 				siteName: RTW_DATA.siteName,
@@ -205,15 +199,15 @@ function rtw_inline_script() {
 				status: 'open',
 				createdAt: firebase.firestore.FieldValue.serverTimestamp(),
 			}).then(function () {
-				statusEl.textContent = 'Verstuurd — bedankt! Ruud ontvangt je verzoek direct.';
+				statusEl.textContent = i18n.success;
 				statusEl.className = 'rtw-status rtw-ok';
 				msgEl.value = '';
 			}).catch(function () {
-				statusEl.textContent = 'Versturen is niet gelukt — probeer het nog eens.';
+				statusEl.textContent = i18n.error;
 				statusEl.className = 'rtw-status rtw-err';
 			}).finally(function () {
 				btn.disabled = false;
-				btn.textContent = 'Versturen';
+				btn.textContent = i18n.send;
 			});
 		});
 	}
@@ -227,28 +221,25 @@ function rtw_inline_script() {
 JS;
 }
 
-/**
- * HTML van het dashboard-widget.
- */
 function rtw_render_dashboard_widget() {
 	$host = rtw_get_site_host();
 	?>
 	<div class="rtw-card">
 		<div id="rtw-missing-site" class="notice notice-error" style="display:none;margin:0 0 10px;">
-			<p>Kon het domein van deze website niet herkennen — neem contact op met ons.</p>
+			<p><?php esc_html_e( 'Could not detect the domain of this website — please contact us.', 'rtw' ); ?></p>
 		</div>
-		<h2 class="rtw-title">Ticket aanmaken</h2>
-		<p class="rtw-intro">Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig.</p>
+		<h2 class="rtw-title"><?php esc_html_e( 'Create a ticket', 'rtw' ); ?></h2>
+		<p class="rtw-intro"><?php esc_html_e( 'Would you like something changed or added to your website? Describe it below — your request arrives with us directly, no account or email needed.', 'rtw' ); ?></p>
 		<form id="rtw-form">
-			<label for="rtw-message">Wat wil je aangepast of toegevoegd hebben?</label>
-			<textarea id="rtw-message" rows="4" placeholder="Bijv. graag het telefoonnummer in de footer aanpassen naar…"></textarea>
-			<label for="rtw-name">Je naam (optioneel)</label>
+			<label for="rtw-message"><?php esc_html_e( 'What would you like changed or added?', 'rtw' ); ?></label>
+			<textarea id="rtw-message" rows="4" placeholder="<?php esc_attr_e( 'E.g. please update the phone number in the footer to…', 'rtw' ); ?>"></textarea>
+			<label for="rtw-name"><?php esc_html_e( 'Your name (optional)', 'rtw' ); ?></label>
 			<input type="text" id="rtw-name" value="<?php echo esc_attr( wp_get_current_user()->display_name ); ?>">
-			<button type="submit" id="rtw-submit">Versturen</button>
+			<button type="submit" id="rtw-submit"><?php esc_html_e( 'Send', 'rtw' ); ?></button>
 			<div id="rtw-status" class="rtw-status"></div>
 		</form>
 		<?php if ( $host ) : ?>
-			<p class="rtw-footnote">Website: <?php echo esc_html( $host ); ?></p>
+			<p class="rtw-footnote"><?php echo esc_html( sprintf( __( 'Website: %s', 'rtw' ), $host ) ); ?></p>
 		<?php endif; ?>
 	</div>
 	<style>

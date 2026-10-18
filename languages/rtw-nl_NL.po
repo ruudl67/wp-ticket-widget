@@ -1,0 +1,51 @@
+# Dutch translation for Helpdesk (Digitaal Wendbaar)
+# Copyright (C) 2024 Digitaal Wendbaar
+msgid ""
+msgstr ""
+"Project-Id-Version: Helpdesk (Digitaal Wendbaar) 1.5.0\n"
+"POT-Creation-Date: 2024-01-01 00:00+0000\n"
+"PO-Revision-Date: 2024-01-01 00:00+0000\n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Text-Domain: rtw\n"
+
+msgid "Helpdesk"
+msgstr "Helpdesk"
+
+msgid "Could not detect the domain of this website — please contact us."
+msgstr "Kon het domein van deze website niet herkennen — neem contact op met ons."
+
+msgid "Create a ticket"
+msgstr "Ticket aanmaken"
+
+msgid "Would you like something changed or added to your website? Describe it below — your request arrives with us directly, no account or email needed."
+msgstr "Wil je iets laten aanpassen of toevoegen aan je website? Beschrijf het hieronder — het komt direct bij ons binnen, geen account of e-mail nodig."
+
+msgid "What would you like changed or added?"
+msgstr "Wat wil je aangepast of toegevoegd hebben?"
+
+msgid "E.g. please update the phone number in the footer to…"
+msgstr "Bijv. graag het telefoonnummer in de footer aanpassen naar…"
+
+msgid "Your name (optional)"
+msgstr "Je naam (optioneel)"
+
+msgid "Send"
+msgstr "Versturen"
+
+msgid "Website: %s"
+msgstr "Website: %s"
+
+msgid "Please describe what you would like changed."
+msgstr "Vul even in wat je aangepast wilt hebben."
+
+msgid "Sending…"
+msgstr "Versturen…"
+
+msgid "Sent — thank you! Ruud will receive your request right away."
+msgstr "Verstuurd — bedankt! Ruud ontvangt je verzoek direct."
+
+msgid "Something went wrong — please try again."
+msgstr "Versturen is niet gelukt — probeer het nog eens."
