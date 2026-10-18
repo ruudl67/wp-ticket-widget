@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Helpdesk (Digitaal Wendbaar)
  * Description: Zet een kort helpdesk-formulier in het WordPress-dashboard, dat rechtstreeks bij ons binnenkomt. Geen instellingen nodig — herkent automatisch om welke website het gaat.
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Digitaal Wendbaar
  * Text Domain: rtw
  * Domain Path: /languages
@@ -57,7 +57,7 @@ function rtw_get_site_host() {
  * Widget registreren op het Dashboard.
  */
 function rtw_register_dashboard_widget() {
-	if ( ! is_user_logged_in() ) {
+	if ( ! current_user_can( 'edit_posts' ) ) {
 		return;
 	}
 	wp_add_dashboard_widget(
@@ -73,7 +73,7 @@ function rtw_register_admin_menu() {
 	$GLOBALS['rtw_menu_hook'] = add_menu_page(
 		__( 'Helpdesk', 'rtw' ),
 		__( 'Helpdesk', 'rtw' ),
-		'read',
+		'edit_posts',
 		'rtw-ticket-form',
 		'rtw_render_dashboard_widget',
 		'dashicons-megaphone',
